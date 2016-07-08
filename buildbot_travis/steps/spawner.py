@@ -49,19 +49,21 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
     def getSchedulersAndProperties(self):
         sch = self.schedulerNames[0]
         triggered_schedulers = []
-
         for env in self.config.matrix:
             props_to_set = Properties()
             props_to_set.setProperty("TRAVIS_PULL_REQUEST",
                                      self.getProperty("TRAVIS_PULL_REQUEST"), "inherit")
-            props_to_set.setProperty("reason",
-                                     "|".join(sorted(str(k) + '=' + str(v) for k, v in env.items())),
-                                     "inherit")
+            flat_env = {}
             for k, v in env.items():
                 if k == "env":
                     props_to_set.update(v, ".travis.yml")
+                    flat_env.update(v)
                 else:
                     props_to_set.setProperty(k, v, ".travis.yml")
+                    flat_env[k] = v
+            props_to_set.setProperty("reason",
+                                     "|".join(sorted(str(k) + '=' + str(v) for k, v in flat_env.items())),
+                                     "inherit")
 
             triggered_schedulers.append((sch, props_to_set))
         return triggered_schedulers
