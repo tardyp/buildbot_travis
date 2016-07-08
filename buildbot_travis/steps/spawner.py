@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from buildbot.process.buildstep import LoggingBuildStep, SUCCESS, FAILURE, EXCEPTION
+
+from twisted.internet import defer
+
 from buildbot.process.properties import Properties
 from buildbot.steps.trigger import Trigger
-from twisted.internet import defer
 
 from .base import ConfigurableStepMixin
 
@@ -53,6 +54,8 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
             props_to_set = Properties()
             props_to_set.setProperty("TRAVIS_PULL_REQUEST",
                                      self.getProperty("TRAVIS_PULL_REQUEST"), "inherit")
+            props_to_set.setProperty("reason",
+                                     repr(env), "inherit")
             for k, v in env.items():
                 if k == "env":
                     props_to_set.update(v, ".travis.yml")

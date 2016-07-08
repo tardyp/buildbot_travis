@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import re
+
 from yaml import safe_load
 
 TRAVIS_HOOKS = ("before_install", "install", "after_install",

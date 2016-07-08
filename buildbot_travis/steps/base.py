@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from buildbot.process import buildstep
-from buildbot.steps.worker import CompositeStepMixin
 from twisted.internet import defer
 
-from ..travisyml import TravisYml
-from ..travisyml import TravisYmlInvalid
+from buildbot.process import buildstep
+from buildbot.steps.worker import CompositeStepMixin
+
+from ..travisyml import TravisYml, TravisYmlInvalid
+
 
 HOW_TO_DEBUG = """
 In order to help you debug, you can install the bbtravis tool:

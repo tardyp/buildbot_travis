@@ -13,13 +13,55 @@
 # limitations under the License.
 
 import re
+import textwrap
 
 from twisted.internet import defer
-from buildbot.process.buildstep import SUCCESS
+
+from buildbot.process.buildstep import SUCCESS, LoggingBuildStep, ShellMixin
 from buildbot.steps import shell
 
-from .base import ConfigurableStep
 from ..travisyml import TRAVIS_HOOKS
+from .base import ConfigurableStep
+
+
+class SetupVirtualEnv(ShellMixin, LoggingBuildStep):
+    name = "setup virtualenv"
+
+    def __init__(self, python):
+        self.python = "python" + python
+        super(SetupVirtualEnv, self).__init__()
+
+    @defer.inlineCallbacks
+    def run(self):
+        command = self.buildCommand()
+        cmd = yield self.makeRemoteShellCommand(command=["bash", "-c", command])
+        yield self.runCommand(cmd)
+        self.setProperty("PATH", "sandbox/bin:" + self.worker.worker_environ['PATH'])
+        defer.returnValue(cmd.results())
+
+    def buildCommand(self):
+        # set up self.command as a very long sh -c invocation
+        command = textwrap.dedent("""\
+        PYTHON='{virtualenv_python}'
+        VE='sandbox'
+        VEPYTHON='sandbox/bin/python'
+
+        # first, set up the virtualenv if it hasn't already been done, or if it's
+        # broken (as sometimes happens when a slave's Python is updated)
+        if ! test -f "$VE/bin/pip" || ! test -d "$VE/lib/$PYTHON" || ! "$VE/bin/python" -c 'import math'; then
+            echo "Setting up virtualenv $VE";
+            rm -rf "$VE";
+            test -d "$VE" && {{ echo "$VE couldn't be removed"; exit 1; }};
+            virtualenv -p $PYTHON "$VE" || exit 1;
+        else
+            echo "Virtualenv already exists"
+        fi
+
+        echo "Upgrading pip";
+        $VE/bin/pip install -U pip
+
+        """).format(virtualenv_python=self.python)
+        return command
 
 
 class ShellCommand(shell.ShellCommand):
@@ -158,18 +200,17 @@ class TravisSetupSteps(ConfigurableStep):
     flunkOnFailure = True
     MAX_NAME_LENGTH = 50
 
-    def addShellCommand(self, name, command):
-        b = self.build
+    def addSetupVirtualEnv(self, python):
+        step = SetupVirtualEnv(python)
+        self.build.addStepsAfterLastStep([step])
 
+    def addShellCommand(self, name, command):
         step = ShellCommand(
             name=name,
             description=command,
             command=['/bin/bash', '-c', command],
         )
-
-        step.setBuild(b)
-        step.setWorker(b.workerforbuilder.worker)
-        b.steps.append(step)
+        self.build.addStepsAfterLastStep([step])
 
     def truncateName(self, name):
         name = name.lstrip("#")
@@ -182,7 +223,8 @@ class TravisSetupSteps(ConfigurableStep):
     @defer.inlineCallbacks
     def run(self):
         config = yield self.getStepConfig()
-
+        if 'python' in config.language:
+            self.addSetupVirtualEnv(self.getProperty("python"))
         for k in TRAVIS_HOOKS:
             for command in getattr(config, k):
                 self.addShellCommand(
