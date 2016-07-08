@@ -42,7 +42,7 @@ class SetupVirtualEnv(ShellMixin, LoggingBuildStep):
     def buildCommand(self):
         # set up self.command as a very long sh -c invocation
         command = textwrap.dedent("""\
-        PYTHON='{virtualenv_python}'
+        PYTHON='python{virtualenv_python}'
         VE='sandbox'
         VEPYTHON='sandbox/bin/python'
 
