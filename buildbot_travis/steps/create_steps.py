@@ -28,7 +28,7 @@ class SetupVirtualEnv(ShellMixin, LoggingBuildStep):
     name = "setup virtualenv"
 
     def __init__(self, python):
-        self.python = "python" + python
+        self.python = python
         super(SetupVirtualEnv, self).__init__()
 
     @defer.inlineCallbacks
@@ -208,7 +208,7 @@ class TravisSetupSteps(ConfigurableStep):
         step = ShellCommand(
             name=name,
             description=command,
-            command=['/bin/bash', '-c', command],
+            command=['bash', '-c', command],
         )
         self.build.addStepsAfterLastStep([step])
 

@@ -55,7 +55,8 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
             props_to_set.setProperty("TRAVIS_PULL_REQUEST",
                                      self.getProperty("TRAVIS_PULL_REQUEST"), "inherit")
             props_to_set.setProperty("reason",
-                                     repr(env), "inherit")
+                                     "|".join(sorted(str(k) + '=' + str(v) for k, v in env.items())),
+                                     "inherit")
             for k, v in env.items():
                 if k == "env":
                     props_to_set.update(v, ".travis.yml")
