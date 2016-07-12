@@ -1,22 +1,28 @@
-not_important_files:
-    - CHANGES
-    - CHANGES.rst
-    - CHANGES.txt
-    - HISTORY.txt
-    - HISTORY
-    - version.txt
-    - .badger.yml
-
-env:
-    CI: 'true'
-
-projects:
-  - name: buildbot_travis
-    repository: git://github.com/tardyp/buildbot_travis
-    vcs_type: git+poller
-
-stages:
-- Commit
-- Acceptance
-- Staging
-- Production
+{
+    "workers": [{
+        "hyper_host": "tcp://us-west-1.hyper.sh:443",
+        "name": "hyperworker",
+        "image": "buildbot/buildbot-worker:master",
+        "number": 5,
+        "hyper_secretkey": "fillme",
+        "hyper_accesskey": "fillme",
+        "type": "HyperWorker",
+        "id": 3386175858
+    }, {
+        "type": "LocalWorker",
+        "id": 3181784000,
+        "name": "myslave2",
+        "number": 10
+    }],
+    "not_important_files": [],
+    "env": {},
+    "stages": [],
+    "projects": [{
+        "branches": ["master"],
+        "name": "buildbot",
+        "repository": "https://github.com/tardyp/buildbot",
+        "tags": [],
+        "stages": [],
+        "vcs_type": "github"
+    }]
+}

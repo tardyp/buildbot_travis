@@ -2,7 +2,7 @@
 B=`pwd`
 if [ ! -f $B/buildbot.tac ]
 then
-    buildbot create-master --db="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres/$POSTGRES_DB" $B
+    buildbot create-master $B
     mv /usr/src/buildbot_travis/example/master.cfg $B/master.cfg
     cp /usr/src/buildbot_travis/example/buildbot.tac $B
 
