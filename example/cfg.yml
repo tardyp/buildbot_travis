@@ -19,7 +19,3 @@ workers:
     number: 5
     size: xxs
     type: HyperWorker
--   id: 3181784000
-    name: myslave2
-    number: 10
-    type: LocalWorker
