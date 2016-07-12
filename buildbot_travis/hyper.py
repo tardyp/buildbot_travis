@@ -117,10 +117,6 @@ class HyperLatentWorker(AbstractLatentWorker):
         }
         if self.registration is not None:
             result["BUILDMASTER_PORT"] = str(self.registration.getPBPort())
-
-        result["BUILDMASTER_PORT"] = '10975'
-        result["BUILDMASTER"] = '0.tcp.ngrok.io'
-        print result
         return result
 
     @defer.inlineCallbacks
