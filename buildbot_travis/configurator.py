@@ -231,7 +231,7 @@ class TravisConfigurator(object):
             name, str(uuid.uuid4()),
             hyper_host=config['hyper_host'], image=config['image'],
             hyper_accesskey=config['hyper_accesskey'], hyper_secretkey=config['hyper_secretkey'],
-            masterFQDN='vm1.buildbot.net')
+            masterFQDN=config['masterFQDN'], hyper_size=config['hyper_size'])
 
     def createWorkerConfig(self):
         self.config.setdefault('workers', [])
