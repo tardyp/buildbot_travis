@@ -17,27 +17,45 @@ config-page
                         .pull-right.btn.btn-danger(ng-click="worker_remove(worker)")
                             | delete worker
                 .form-group
-                    label.col-sm-2.control-label number of workers:
+                    label.col-sm-2.control-label Number of workers:
                     .col-sm-10
                         input.form-control(type="number", ng-model="worker.number")
 
                 .form-group(ng-if="worker.type=='Worker'")
-                    label.col-sm-2.control-label password for the workers:
+                    label.col-sm-2.control-label Password for the workers:
                     .col-sm-10
                         input.form-control(type="text", ng-model="worker.password", ng-init="change_me")
                 div(ng-if="worker.type=='HyperWorker'")
-                    .form-group(ng-if="worker.type=='HyperWorker'")
+                    .form-group
                         label.col-sm-2.control-label Hyper Host Url:
                         .col-sm-10
                             input.form-control(type="text", ng-model="worker.hyper_host", placeholder = "tcp://us-west-1.hyper.sh:443")
                     .form-group
-                        label.col-sm-2.control-label accesskey:
+                        label.col-sm-2.control-label MasterFQDN:
+                        .col-sm-10
+                            input.form-control(type="text", ng-model="worker.masterFQDN", placeholder = "IP or dns of the master, leave empty for autodetection")
+                    .form-group
+                        label.col-sm-2.control-label Accesskey:
                         .col-sm-10
                             input.form-control(type="text", ng-model="worker.hyper_accesskey")
                     .form-group
-                        label.col-sm-2.control-label secretkey:
+                        label.col-sm-2.control-label Secretkey:
                         .col-sm-10
                             input.form-control(type="text", ng-model="worker.hyper_secretkey")
+                    .form-group
+                        label.col-sm-2.control-label
+                            a(href='https://www.hyper.sh/pricing.html')  Worker Size
+                            | &nbsp;:
+                        .col-sm-2
+                            select.form-control(ng-model="worker.size")
+                                option(value="xxs") xxs
+                                option(value="xs") xs
+                                option(value="s") s
+                                option(value="m") m
+                                option(value="l") l
+                                option(value="xl") xl
+                                option(value="xxl") xxl
+                                option(value="xxxl") xxxl
                 div(ng-if="worker.type=='DockerWorker' || worker.type=='HyperWorker'")
                     .form-group
                         label.col-sm-2.control-label image name:

@@ -1,28 +1,25 @@
-{
-    "workers": [{
-        "hyper_host": "tcp://us-west-1.hyper.sh:443",
-        "name": "hyperworker",
-        "image": "buildbot/buildbot-worker:master",
-        "number": 5,
-        "hyper_secretkey": "fillme",
-        "hyper_accesskey": "fillme",
-        "type": "HyperWorker",
-        "id": 3386175858
-    }, {
-        "type": "LocalWorker",
-        "id": 3181784000,
-        "name": "myslave2",
-        "number": 10
-    }],
-    "not_important_files": [],
-    "env": {},
-    "stages": [],
-    "projects": [{
-        "branches": ["master"],
-        "name": "buildbot",
-        "repository": "https://github.com/tardyp/buildbot",
-        "tags": [],
-        "stages": [],
-        "vcs_type": "github"
-    }]
-}
+env: {}
+not_important_files: []
+projects:
+-   branches:
+    - master
+    name: buildbot
+    repository: https://github.com/tardyp/buildbot
+    stages: []
+    tags: []
+    vcs_type: github
+stages: []
+workers:
+-   hyper_accesskey: fillme
+    hyper_host: tcp://us-west-1.hyper.sh:443
+    hyper_secretkey: fillme
+    id: 3386175858
+    image: buildbot/buildbot-worker:master
+    name: hyperworker
+    number: 5
+    size: xxs
+    type: HyperWorker
+-   id: 3181784000
+    name: myslave2
+    number: 10
+    type: LocalWorker
