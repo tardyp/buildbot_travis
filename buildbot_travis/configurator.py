@@ -7,7 +7,6 @@ from twisted.internet import defer
 from yaml import safe_load
 
 import buildbot_travis
-import buildbot_travis.hyper
 from buildbot import getVersion
 from buildbot.config import error as config_error
 # TBD use plugins!
@@ -227,7 +226,7 @@ class TravisConfigurator(object):
                                          followStartupLogs=True)
 
     def createWorkerConfigHyperWorker(self, config, name):
-        return buildbot_travis.hyper.HyperLatentWorker(
+        return worker.HyperLatentWorker(
             name, str(uuid.uuid4()),
             hyper_host=config['hyper_host'], image=config['image'],
             hyper_accesskey=config['hyper_accesskey'], hyper_secretkey=config['hyper_secretkey'],
