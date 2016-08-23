@@ -246,10 +246,9 @@ Deploying in hyper
 ::
 
     IP=<yourFIPaddress>
-    container=`hyper run -d -e buildbotURL=http://$IP:8010/ tardyp/buildbot_travis:hyper`
-    hyper fip associate $IP $container
-
-The go to http://$IP:8010/#/bbtravis/config/workers
+    container=`hyper run -d -e buildbotURL=http://$IP/ -p 0.0.0.0:9989:9989 -p 0.0.0.0:80:8010 tardyp/buildbot_travis:hyper`
+    hyper fip attach $IP $container
+    echo go to http://$IP/#/bbtravis/config/workers
 
 
 And configure your hyper keys in the default hyper worker

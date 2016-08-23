@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from twisted.internet import defer
 
 from buildbot.process.properties import Properties
@@ -34,7 +33,8 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
         if "name" not in kwargs:
             kwargs['name'] = 'trigger'
         self.config = None
-        Trigger.__init__(self, waitForFinish=True, schedulerNames=[scheduler], **kwargs)
+        Trigger.__init__(
+            self, waitForFinish=True, schedulerNames=[scheduler], **kwargs)
 
     @defer.inlineCallbacks
     def run(self):
@@ -52,7 +52,8 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
         for env in self.config.matrix:
             props_to_set = Properties()
             props_to_set.setProperty("TRAVIS_PULL_REQUEST",
-                                     self.getProperty("TRAVIS_PULL_REQUEST"), "inherit")
+                                     self.getProperty("TRAVIS_PULL_REQUEST"),
+                                     "inherit")
             flat_env = {}
             for k, v in env.items():
                 if k == "env":
@@ -61,9 +62,12 @@ class TravisTrigger(Trigger, ConfigurableStepMixin):
                 else:
                     props_to_set.setProperty(k, v, ".travis.yml")
                     flat_env[k] = v
-            props_to_set.setProperty("reason",
-                                     "|".join(sorted(str(k) + '=' + str(v) for k, v in flat_env.items())),
-                                     "inherit")
+            props_to_set.setProperty(
+                "reason",
+                u" | ".join(
+                    sorted(str(k) + '=' + str(v)
+                           for k, v in flat_env.items())),
+                "spawner")
 
             triggered_schedulers.append((sch, props_to_set))
         return triggered_schedulers
