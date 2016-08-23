@@ -48,14 +48,7 @@ config-page
                             | &nbsp;:
                         .col-sm-2
                             select.form-control(ng-model="worker.size")
-                                option(value="xxs") xxs
-                                option(value="xs") xs
-                                option(value="s") s
-                                option(value="m") m
-                                option(value="l") l
-                                option(value="xl") xl
-                                option(value="xxl") xxl
-                                option(value="xxxl") xxxl
+                                option(value="{{s}}" ng-repeat="s in 's1 s2 s3 s4 m1 m2 m3 l1 l2 l3'.split(' ')") {{s}}
                 div(ng-if="worker.type=='DockerWorker' || worker.type=='HyperWorker'")
                     .form-group
                         label.col-sm-2.control-label image name:
