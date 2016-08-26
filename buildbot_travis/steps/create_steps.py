@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import re
 import textwrap
+import traceback
 
 from twisted.internet import defer
 
@@ -36,7 +38,9 @@ class SetupVirtualEnv(ShellMixin, LoggingBuildStep):
         command = self.buildCommand()
         cmd = yield self.makeRemoteShellCommand(command=["bash", "-c", command])
         yield self.runCommand(cmd)
-        self.setProperty("PATH", "sandbox/bin:" + self.worker.worker_environ['PATH'])
+        self.setProperty("PATH", os.path.join(self.getProperty("builddir"), self.workdir, "sandbox/bin") +
+                         ":" +
+                         self.worker.worker_environ['PATH'])
         defer.returnValue(cmd.results())
 
     def buildCommand(self):
@@ -204,13 +208,35 @@ class TravisSetupSteps(ConfigurableStep):
         step = SetupVirtualEnv(python)
         self.build.addStepsAfterLastStep([step])
 
-    def addShellCommand(self, name, command):
+    def addShellCommand(self, command):
+        name = None
+        condition = None
+        if isinstance(command, dict):
+            name = command.get("title")
+            condition = command.get("condition")
+            command = command.get("cmd")
+        if name is None:
+            name = self.truncateName(command)
+        if condition is not None:
+            try:
+                if not self.testCondition(condition):
+                    return
+            except Exception:
+                self.descriptionDone = u"Problem parsing condition"
+                self.addCompleteLog(
+                    "condition error",
+                    traceback.format_exc())
+                return
         step = ShellCommand(
             name=name,
             description=command,
-            command=['bash', '-c', command],
+            command=['bash', '-c', command]
         )
         self.build.addStepsAfterLastStep([step])
+
+    def testCondition(self, condition):
+        l = dict((k, v) for k, (v, s) in self.getProperties().asDict())
+        return eval(condition, l)
 
     def truncateName(self, name):
         name = name.lstrip("#")
@@ -228,7 +254,6 @@ class TravisSetupSteps(ConfigurableStep):
         for k in TRAVIS_HOOKS:
             for command in getattr(config, k):
                 self.addShellCommand(
-                    name=self.truncateName(command),
                     command=command,
                 )
 
